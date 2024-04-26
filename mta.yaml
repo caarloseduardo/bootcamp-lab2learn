@@ -1,0 +1,103 @@
+_schema-version: "3.1"
+ID: bootcamp-lab2learn
+description: A simple CAP project.
+version: 1.0.0
+modules:
+- name: bootcamp-lab2learn-cap-srv
+  type: nodejs
+  path: gen/srv
+  requires:
+  - name: bootcamp-lab2learn-cap-destination
+  - name: bootcamp-lab2learn-cap-connectivity
+  - name: bootcamp-lab2learn-cap-db
+  provides:
+  - name: srv-api
+    properties:
+      srv-url: ${default-url}
+  parameters:
+    buildpack: nodejs_buildpack
+  build-parameters:
+    builder: npm
+- name: bootcamp-lab2learn-cap-db-deployer
+  type: hdb
+  path: gen/db
+  requires:
+  - name: bootcamp-lab2learn-cap-db
+  parameters:
+    buildpack: nodejs_buildpack
+- name: bootcamp-lab2learn-app-content
+  type: com.sap.application.content
+  path: .
+  requires:
+  - name: bootcamp-lab2learn-repo-host
+    parameters:
+      content-target: true
+  build-parameters:
+    build-result: resources
+    requires:
+    - artifacts:
+      - l2lbootcamplab2learn.zip
+      name: l2lbootcamplab2learn
+      target-path: resources/
+- name: l2lbootcamplab2learn
+  type: html5
+  path: app/bootcamp-lab2learn
+  build-parameters:
+    build-result: dist
+    builder: custom
+    commands:
+    - npm install
+    - npm run build:cf
+    supported-platforms: []
+resources:
+- name: bootcamp-lab2learn-cap-connectivity
+  type: org.cloudfoundry.managed-service
+  parameters:
+    service: connectivity
+    service-plan: lite
+- name: bootcamp-lab2learn-cap-destination
+  type: org.cloudfoundry.managed-service
+  parameters:
+    config:
+      HTML5Runtime_enabled: false
+      init_data:
+        instance:
+          destinations:
+          - Authentication: NoAuthentication
+            Name: ui5
+            ProxyType: Internet
+            Type: HTTP
+            URL: https://ui5.sap.com
+          - Authentication: NoAuthentication
+            HTML5.DynamicDestination: true
+            HTML5.ForwardAuthToken: true
+            Name: bootcamp-lab2learn-srv-api
+            ProxyType: Internet
+            Type: HTTP
+            URL: ~{srv-api/srv-url}
+          existing_destinations_policy: update
+      version: 1.0.0
+    service: destination
+    service-plan: lite
+  requires:
+  - name: srv-api
+- name: bootcamp-lab2learn-cap-db
+  type: com.sap.xs.hdi-container
+  parameters:
+    service: hana
+    service-plan: hdi-shared
+- name: bootcamp-lab2learn-repo-host
+  type: org.cloudfoundry.managed-service
+  parameters:
+    service: html5-apps-repo
+    service-name: bootcamp-lab2learn-html5-srv
+    service-plan: app-host
+parameters:
+  deploy_mode: html5-repo
+  enable-parallel-deployments: true
+build-parameters:
+  before-all:
+  - builder: custom
+    commands:
+    - npm install
+    - npx cds build --production

@@ -1,0 +1,21 @@
+@server=http://localhost:4004
+
+### Create Stacks
+POST {{server}}/odata/v4/Stacks
+Content-Type: application/json
+
+{
+    "name": "ABAP"
+}
+
+### Create Users
+POST {{server}}/odata/v4/Users
+Content-Type: application/json
+
+{
+    "name": "Carlos Eduardo",
+    "email": "carlos.santos@lab2dev.com",
+    "address": "SP",
+    "photo_url": "",
+    "stack_ID": "53b6aa8e-dce8-46e8-a50d-89f1e1916c4e"
+}
