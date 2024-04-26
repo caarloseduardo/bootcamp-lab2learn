@@ -25,30 +25,6 @@ modules:
   - name: bootcamp-lab2learn-cap-db
   parameters:
     buildpack: nodejs_buildpack
-- name: bootcamp-lab2learn-app-content
-  type: com.sap.application.content
-  path: .
-  requires:
-  - name: bootcamp-lab2learn-repo-host
-    parameters:
-      content-target: true
-  build-parameters:
-    build-result: resources
-    requires:
-    - artifacts:
-      - l2lbootcamplab2learn.zip
-      name: l2lbootcamplab2learn
-      target-path: resources/
-- name: l2lbootcamplab2learn
-  type: html5
-  path: app/bootcamp-lab2learn
-  build-parameters:
-    build-result: dist
-    builder: custom
-    commands:
-    - npm install
-    - npm run build:cf
-    supported-platforms: []
 resources:
 - name: bootcamp-lab2learn-cap-connectivity
   type: org.cloudfoundry.managed-service
