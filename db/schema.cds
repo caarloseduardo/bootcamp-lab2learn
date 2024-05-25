@@ -11,7 +11,7 @@ entity Users : cuid {
 }
 
 entity Stacks {
-    label   : String(200);
-    value   : String(200);
-    users   : Association to many Users on users.stack = $self;
+    key value   : String(200);
+    label       : String(200);
+    users       : Association to many Users on users.stack = $self;
 }
