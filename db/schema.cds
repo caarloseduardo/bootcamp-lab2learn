@@ -10,7 +10,8 @@ entity Users : cuid {
     stack       : Association to one Stacks;   
 }
 
-entity Stacks : cuid {
-    name    : String(200);
+entity Stacks {
+    label   : String(200);
+    value   : String(200);
     users   : Association to many Users on users.stack = $self;
 }
